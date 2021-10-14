@@ -1,0 +1,99 @@
+doctype html
+html
+    head 
+        style
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js")
+        script.
+            function yesnocheck() {
+                if (document.getElementById('q1').checked) {
+                    document.getElementById('q2div').style.display = 'none';
+                    document.getElementById('q1div').style.display = 'block';
+                } else if (document.getElementById('q2').checked){
+                    document.getElementById('q1div').style.display = 'none';
+                    document.getElementById('q2div').style.display = 'block';
+                }
+                else{
+                    document.getElementById('q1div').style.display = 'none';
+                    document.getElementById('q2div').style.display = 'none';
+                }
+            }
+
+        title form
+    body 
+        div(id = 'maindiv' align = 'center')
+            label Query by Timestamp:
+            input(type='radio', onclick='javascript:yesnocheck();' value = 'query1', name='query' id='q1')
+            br
+            div(id='q1div' style='display:none' name='divq1')
+                form(name = 'queryform1', id = 'qf1')
+                    table
+                        tr 
+                            td 
+                                label Timestamp 
+                                input(type='text' id='q1tf1N', name='q1tfN', placeholder = 'DD/MMM/YYYY:HH:MM:SS')
+                        tr 
+                            td(colspan='2', align='center')
+                                input(type='submit', value='Submit')
+            br
+            label Query by IP Address:
+            input(type='radio', onclick='javascript:yesnocheck();' value = 'query2', name='query' id='q2')
+            div(id='q2div' style='display:none' name='divq2')
+                form(name = 'queryform2' id = 'qf2')
+                    table
+                        tr 
+                            td 
+                                label IP Address  
+                                input(type='text' id='q2tf1N', name='q2tfN', placeholder = '127.0.0.1')
+
+                        tr 
+                            td(colspan='2', align='center')
+                                input(type='submit', value='Submit')
+            br 
+            br 
+            br
+            label Result:  
+            p(id='fn')
+
+
+        script. 
+            $(document).ready(function(){
+                $('#qf2').on('submit', function(event){
+                    event.preventDefault();
+                    const formData = $(this).serialize();
+                    console.log(formData);
+
+                    $.ajax({
+                        url : '/query2',
+                        method : 'post',
+                        data : formData,
+                        success : function(result, status, xhr){
+                            console.log('success...');
+                            document.getElementById("fn").innerHTML = result.msg;
+                        },
+                        error : function(xhr, status, error) {
+                            console.log('wrong');
+                        }
+                    }); 
+                })
+            })
+
+            $(document).ready(function(){
+                $('#qf1').on('submit', function(event){
+                    event.preventDefault();
+                    const formData = $(this).serialize();
+                    console.log(formData);
+
+                    $.ajax({
+                        url : '/query1',
+                        method : 'post',
+                        data : formData,
+                        success : function(result, status, xhr){
+                            console.log('success...');
+                            document.getElementById("fn").innerHTML = result.msg;
+                        },
+                        error : function(xhr, status, error) {
+                            console.log('wrong');
+                        }
+                    }); 
+                })
+            })
